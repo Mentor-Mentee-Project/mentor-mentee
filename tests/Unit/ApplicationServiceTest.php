@@ -34,7 +34,7 @@ class ApplicationServiceTest extends TestCase
 
         // 申請中なのでfalse
         $application->status = 1;
-        $inProgress = $this->service->JustApproved($application);
+        $inProgress = $this->service->justApproved($application);
         $this->assertFalse($inProgress);
 
         // 承認済みだが既読があるのでfalse
