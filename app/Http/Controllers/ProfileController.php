@@ -56,7 +56,7 @@ class ProfileController extends Controller
 
         $urls = $this->urlService->findUrls($profile, config('url.types'));
 
-        $upcomingReservations = $this->reservationService->getUpcomingReservationsByUser($user);
+        $upcomingReservations = $this->reservationService->getUpcomingReservationsByUser($user)->sortBy('date');
 
         list($userCareer, $careers, $userPurposes, $purposes, $userSkills, $skills, $mentors, $application,
             $appliedMentor)
