@@ -9,6 +9,7 @@ use App\Http\Requests\ApplicationUpdateRequest;
 use App\Repositories\Application\IApplicationRepository;
 use App\Repositories\ReadApplication\IReadApplicationRepository;
 use App\Repositories\User\IUserRepository;
+use App\Services\ApplicationService;
 use Illuminate\Support\Facades\Auth;
 
 class ApplicationController extends Controller
@@ -29,35 +30,25 @@ class ApplicationController extends Controller
     public function __construct(
         IApplicationRepository $applicationRepository,
         IReadApplicationRepository $readApplicationRepository,
-        IUserRepository $userRepository
+        IUserRepository $userRepository,
+        ApplicationService $applicationService
     ) {
         $this->applicationRepository = $applicationRepository;
         $this->readApplicationRepository = $readApplicationRepository;
         $this->userRepository = $userRepository;
+
+        $this->applicationService = $applicationService;
     }
 
     public function index()
     {
         $user = $this->userRepository->getBySub(Auth::id());
-        $userId = $user->id;
-        $applications = $user->is_mentor ? $user->mentorApplications : $user->menteeApplications;
+        $applications = $this->applicationService->fetchApplications($user);
 
         //既読処理
         $this->readApplicationRepository->create($applications);
 
-        $userCategory = $user->is_mentor ? 'mentee_id' : 'mentor_id';
-
-        $applicants = [];
-
-        foreach ($applications as $application) {
-            if ($application->status !== 1) {
-                continue;
-            }
-            $user = $this->userRepository->getById($application->{$userCategory});
-            $create = $application->created_at->format('Y/m/d');
-            $applicants[] = ['id' => $application->{$userCategory}, 'name' => $user->name, 'created_at' => $create];
-        }
-        return view('application.index', compact('applications', 'applicants', 'userCategory', 'userId'));
+        return view('application.index', compact('applications'));
     }
 
     public function store(ApplicationCreateRequest $request)

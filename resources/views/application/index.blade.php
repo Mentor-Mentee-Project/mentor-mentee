@@ -18,12 +18,12 @@
             </div>
         @endif
 
-        @if(!$applicants)
+        @if($applications->isEmpty())
             応募がありません
         @else
             <h1 class="my-3 ml-3">応募一覧</h1>
 
-            @if($userCategory!="mentor_id")
+            @if($user->is_mentor)
                 <form action="{{ route('application.update') }}" method="POST">
                     @csrf
                     @method('POST')
@@ -35,30 +35,30 @@
                             name="approved" value="approved">承認</button>
                         </p>
                     </div>
-                    <input type="hidden" name="mentor_id" value="{{$userId}}">
+                    <input type="hidden" name="mentor_id" value="{{$user->id}}">
             @endif
-            <div class ="col-sm-8 offset-md-2">
-            @foreach($applicants as $applicant)
-                            <div class="card">
-                                <label>
-                                    <div class="card-body">
-                                        <div class="text-left">
-                                            @if($userCategory!="mentor_id")
-                                                <p><input type="checkbox" name="userId[]" value= {{ $applicant['id'] }}>
-                                            @endif
-                                            名前： <a href="{{ route('profile.show',$applicant['id'])}}" >{{ $applicant['name']}}</a>
-                                        </div>
-                                        <div class="text-right">
-                                            受付日: {{ $applicant['created_at']}} 
-                                        </div>
-                                    <div class="text-right">
-                                        @if($userCategory!="mentor_id")
-                                        <button type= "submit" class="btn btn-dark pull-right" name="rejected" value="{{ $applicant['id'] }}">拒否</button>
-                                        @endif
-                                    </div>
-                                </label>
+                <div class ="col-sm-8 offset-md-2">
+                @foreach($applications as $application)
+                    <div class="card">
+                        <label>
+                            <div class="card-body">
+                                <div class="text-left">
+                                    @if($user->is_mentor)
+                                        <p><input type="checkbox" name="userId[]" value= {{ $application->applicant_id }}>
+                                    @endif
+                                    名前： <a href="{{ route('profile.show', $application->applicant_id )}}" >{{ $application->applicant_name }}</a>
+                                </div>
+                                <div class="text-right">
+                                    受付日: {{ $application->created_at->format('Y/m/d') }} 
+                                </div>
+                            <div class="text-right">
+                                @if($user->is_mentor)
+                                <button type= "submit" class="btn btn-dark pull-right" name="rejected" value="{{ $application->applicant_id }}">拒否</button>
+                                @endif
                             </div>
-            </div></br>
+                        </label>
+                    </div>
+                </div></br>
             @endforeach
         @endif
             </form>
