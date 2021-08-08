@@ -3,40 +3,38 @@
 @section('content')
     {{--    @TODO:メンティーなら過去の応募内容、メンティーなら受け取った応募一覧を表示--}}
     <div class="text-center">
-        @if (session('success'))
-            <div class="alert alert-success text-center">
-                <ul class="list-unstyled">
-                    <li>{{ session('success') }}</li>
-                </ul>
-            </div>
-        @endif
-        @if (session('alert'))
-            <div class="alert alert-danger text-center">
-                <ul class="list-unstyled">
-                    <li>{{ session('alert') }}</li>
-                </ul>
-            </div>
-        @endif
+    {{-- メッセージ表示 --}}
+    @if (session('success'))
+        <div class="alert alert-success text-center">
+            <ul class="list-unstyled">
+                <li>{{ session('success') }}</li>
+            </ul>
+        </div>
+    @endif
+    @if (session('alert'))
+        <div class="alert alert-danger text-center">
+            <ul class="list-unstyled">
+                <li>{{ session('alert') }}</li>
+            </ul>
+        </div>
+    @endif
 
-        @if($applications->isEmpty())
-            応募がありません
-        @else
-            <h1 class="my-3 ml-3">応募一覧</h1>
-
-            @if($user->is_mentor)
-                <form action="{{ route('application.update') }}" method="POST">
-                    @csrf
-                    @method('POST')
-                    <div class="col-sm-8 offset-md-2">
-                        承認する応募をチェックして、承認ボタンを押してください。
-                    </div>
-                    <div class="col-sm-6 offset-md-6">
-                        <p><button type= "submit" class="btn btn-primary" 
-                            name="approved" value="approved">承認</button>
-                        </p>
-                    </div>
-                    <input type="hidden" name="mentor_id" value="{{$user->id}}">
-            @endif
+    @if($applications->isEmpty())
+        応募がありません
+    @else
+        <h1 class="my-3 ml-3">応募一覧</h1>
+        @if($user->is_mentor)
+            <form action="{{ route('application.update') }}" method="POST">
+                @csrf
+                <div class="col-sm-8 offset-md-2">
+                    承認する応募をチェックして、承認ボタンを押してください。
+                </div>
+                <div class="col-sm-6 offset-md-6">
+                    <p>
+                        <button type= "submit" class="btn btn-primary" name="approved" value="approved">承認</button>
+                    </p>
+                </div>
+        @endif {{-- $user->is_mentor --}}
                 <div class ="col-sm-8 offset-md-2">
                 @foreach($applications as $application)
                     <div class="card">
@@ -53,13 +51,32 @@
                                 </div>
                             <div class="text-right">
                                 @if($user->is_mentor)
-                                <button type= "submit" class="btn btn-dark pull-right" name="rejected" value="{{ $application->applicant_id }}">拒否</button>
+                                <button type= "button" class="btn btn-dark pull-right" name="rejected" value="{{ $application->applicant_id }}" onclick="rejectApplication(this.value)">拒否</button>
                                 @endif
                             </div>
                         </label>
                     </div>
+                @endforeach
                 </div></br>
-            @endforeach
-        @endif
+        @if($user->is_mentor)
             </form>
+        @endif
+    @endif
+    </div>
+
+    {{-- 拒否用フォーム --}}
+    @if($user->is_mentor)
+    <form name="reject_form" action="{{ route('application.reject') }}" method="post">
+        @csrf
+        <input id="reject-id" type="hidden" name="rejected" value="">
+    </form>
+    <script>
+        function rejectApplication(applicant_id) {
+            if(confirm('メンティー申請を拒否します。よろしいですか？')) {
+                document.querySelector('#reject-id').value = applicant_id;
+                document.reject_form.submit();
+            }
+        }
+    </script>
+    @endif
 @endsection

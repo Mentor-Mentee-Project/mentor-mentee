@@ -69,25 +69,38 @@ class ApplicationController extends Controller
 
     public function update(ApplicationUpdateRequest $request)
     {
-        $mentorId = $request->mentor_id;
-
-        if ($request->has('rejected')) {
-            //application statusを3に更新
-            $menteeId = $request->rejected;
-            $this->applicationRepository->updateRejectedApplication($mentorId, $menteeId);
-            return redirect()->route('application.index')->with(['success' => '応募を拒否しました。']);
-        } elseif ($request->has('approved')) {
-            $mentees = $request->userId;
-
-            foreach ($mentees as $menteeId) {
-                //aplication statusを2に更新
-                $this->applicationRepository->updateApprovedApplication($mentorId, $menteeId);
-                //read_application　既読済テーブルから既読の情報を消す
-                //@TODO:delete()メソッドの実装
-//                $application = $this->applicationRepository->getOngoingApplication($menteeId);
-//                $this->readApplicationRepository->delete($application->id, $menteeId);
-            }
-            return redirect()->route('application.index')->with(['success' => '応募を承認しました。']);
+        $user = $this->userRepository->getBySub(Auth::id());
+        if($user->is_mentor === false) {
+            abort(403);
         }
+
+        $mentorId = $user->id;
+        foreach ($request->userId as $menteeId) {
+            //aplication statusを承認済に更新
+            $this->applicationRepository->updateApprovedApplication($mentorId, $menteeId);
+            
+            //read_application　既読済テーブルから既読の情報を消す
+            // @TODO:delete()メソッドの実装
+            // ※現状このコメントアウトの背景が分からなくなっているので要調査 2021/08/07
+            // $application = $this->applicationRepository->getOngoingApplication($menteeId);
+            // $this->readApplicationRepository->delete($application->id, $menteeId);
+        }
+
+        return redirect()->route('application.index')->with(['success' => '応募を承認しました。']);
+    }
+
+    public function reject(ApplicationUpdateRequest $request)
+    {
+        $user = $this->userRepository->getBySub(Auth::id());
+        if ($user->is_mentor === false) {
+            abort(403);
+        }
+
+        //application statusを拒否済に更新
+        $mentorId = $user->id;
+        $rejectedId = (int)$request->rejected;
+        $this->applicationRepository->updateRejectedApplication($mentorId, $rejectedId);
+
+        return redirect()->route('application.index')->with(['success' => '応募を拒否しました。']);
     }
 }

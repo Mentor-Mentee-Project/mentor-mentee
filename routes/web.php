@@ -37,6 +37,7 @@ Route::group(
             Route::get('/', 'ApplicationController@index')->name('application.index');
             Route::post('/', 'ApplicationController@store')->name('application.store');
             Route::post('/update', 'ApplicationController@update')->name('application.update');
+            Route::post('/reject', 'ApplicationController@reject')->name('application.reject');
         });
 
         // 1on1スケジュール

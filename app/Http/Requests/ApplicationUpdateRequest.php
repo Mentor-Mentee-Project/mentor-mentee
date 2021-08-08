@@ -26,7 +26,7 @@ class ApplicationUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'mentor_id' => ['required', 'exists:users,id'],
+            'userId' => ['required_if:approved, approved', 'exists:users,id']
         ];
     }
 }
