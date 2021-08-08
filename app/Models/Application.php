@@ -34,9 +34,9 @@ class Application extends Model
     }
 
     /**
-     * アクセサ
+     * アクセサ.
      */
-    public function getApplicantIdAttribute() 
+    public function getApplicantIdAttribute()
     {
         return $this->mentee_id;
     }

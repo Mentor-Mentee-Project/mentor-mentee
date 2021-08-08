@@ -26,14 +26,14 @@ class ApplicationUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'userId' => ['required', 'exists:users,id']
+            'userId' => ['required', 'exists:users,id'],
         ];
     }
 
     public function messages()
     {
         return [
-            'userId.required' => '承認するユーザーを選択してください'
+            'userId.required' => '承認するユーザーを選択してください',
         ];
     }
 }

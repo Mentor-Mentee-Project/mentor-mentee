@@ -27,6 +27,7 @@ class ApplicationController extends Controller
      * @param IApplicationRepository     $applicationRepository
      * @param IReadApplicationRepository $readApplicationRepository
      * @param IUserRepository            $userRepository
+     * @param ApplicationService         $applicationService
      */
     public function __construct(
         IApplicationRepository $applicationRepository,
@@ -71,15 +72,17 @@ class ApplicationController extends Controller
     public function update(ApplicationUpdateRequest $request)
     {
         $user = $this->userRepository->getBySub(Auth::id());
-        if($user->is_mentor === false) {
+
+        if ($user->is_mentor === false) {
             abort(403);
         }
 
         $mentorId = $user->id;
+
         foreach ($request->userId as $menteeId) {
             //aplication statusを承認済に更新
             $this->applicationRepository->updateApprovedApplication($mentorId, $menteeId);
-            
+
             //read_application　既読済テーブルから既読の情報を消す
             // @TODO:delete()メソッドの実装
             // ※現状このコメントアウトの背景が分からなくなっているので要調査 2021/08/07
@@ -93,13 +96,14 @@ class ApplicationController extends Controller
     public function reject(Request $request)
     {
         $user = $this->userRepository->getBySub(Auth::id());
+
         if ($user->is_mentor === false) {
             abort(403);
         }
 
         //application statusを拒否済に更新
         $mentorId = $user->id;
-        $rejectedId = (int)$request->rejected;
+        $rejectedId = (int) $request->rejected;
         $this->applicationRepository->updateRejectedApplication($mentorId, $rejectedId);
 
         return redirect()->route('application.index')->with(['success' => '応募を拒否しました。']);

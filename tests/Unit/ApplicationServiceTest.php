@@ -63,14 +63,14 @@ class ApplicationServiceTest extends TestCase
         // サンプルデータ投入
         $mentor = User::factory()->create();
         $mentees = User::factory(5)->create()
-        ->each(function($mentee) use ($mentor) {
+            ->each(function ($mentee) use ($mentor): void {
             $applications = Application::factory()->create([
                 'mentor_id' => $mentor->id,
                 'mentee_id' => $mentee->id,
-                'status' => 1 // 申請中
+                'status' => 1, // 申請中
             ]);
-        }); 
-        
+        });
+
         // メンターとしてfetch
         $applications = $this->service->fetchApplications($mentor);
         // 取得した申請の数はメンティーの数と一致する

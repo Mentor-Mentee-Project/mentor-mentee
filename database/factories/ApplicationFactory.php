@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\Application;
@@ -25,7 +27,7 @@ class ApplicationFactory extends Factory
             'mentor_id' => 1,
             'mentee_id' => $this->faker->randomNumber(),
             'status' => 1,
-            'approved_at' => null
+            'approved_at' => null,
         ];
     }
 }

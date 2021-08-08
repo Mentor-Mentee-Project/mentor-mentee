@@ -43,14 +43,14 @@ class ApplicationService
     }
 
     /**
-     * ユーザーに紐付いた申請を取得する
+     * ユーザーに紐付いた申請を取得する.
      * @param User $user
      * @return Collection
      */
-    public function fetchApplications(User $user): Collection 
+    public function fetchApplications(User $user): Collection
     {
         $userIdKey = $user->is_mentor ? 'mentor_id' : 'mentee_id';
-        
+
         $applications = Application::where($userIdKey, $user->id)
             ->where('status', ApplicationStatus::APPLIED) // 申請中のみ
             ->with('mentee') // 申請者のユーザー情報も同時に取得
