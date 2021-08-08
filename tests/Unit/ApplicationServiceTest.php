@@ -6,9 +6,10 @@ namespace Tests\Unit;
 
 use App\Models\Application;
 use App\Models\ReadApproval;
+use App\Models\User;
 use App\Repositories\ReadApproval\ReadApprovalRepository;
 use App\Services\ApplicationService;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class ApplicationServiceTest extends TestCase
 {
@@ -55,5 +56,24 @@ class ApplicationServiceTest extends TestCase
         $application->readApproval = collect();
         $justApproved = $this->service->justApproved($application);
         $this->assertTrue($justApproved);
+    }
+
+    public function testFetchApplicationsMethod(): void
+    {
+        // サンプルデータ投入
+        $mentor = User::factory()->create();
+        $mentees = User::factory(5)->create()
+            ->each(function ($mentee) use ($mentor): void {
+            $applications = Application::factory()->create([
+                'mentor_id' => $mentor->id,
+                'mentee_id' => $mentee->id,
+                'status' => 1, // 申請中
+            ]);
+        });
+
+        // メンターとしてfetch
+        $applications = $this->service->fetchApplications($mentor);
+        // 取得した申請の数はメンティーの数と一致する
+        $this->assertTrue($applications->count() === $mentees->count());
     }
 }

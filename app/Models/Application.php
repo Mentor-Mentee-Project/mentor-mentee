@@ -32,4 +32,17 @@ class Application extends Model
     {
         return $this->hasMany('App\Models\ReadApproval', 'user_id', 'mentee_id');
     }
+
+    /**
+     * アクセサ.
+     */
+    public function getApplicantIdAttribute()
+    {
+        return $this->mentee_id;
+    }
+
+    public function getApplicantNameAttribute()
+    {
+        return $this->mentee->name;
+    }
 }
