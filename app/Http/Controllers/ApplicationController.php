@@ -10,6 +10,7 @@ use App\Repositories\Application\IApplicationRepository;
 use App\Repositories\ReadApplication\IReadApplicationRepository;
 use App\Repositories\User\IUserRepository;
 use App\Services\ApplicationService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ApplicationController extends Controller
@@ -89,7 +90,7 @@ class ApplicationController extends Controller
         return redirect()->route('application.index')->with(['success' => '応募を承認しました。']);
     }
 
-    public function reject(ApplicationUpdateRequest $request)
+    public function reject(Request $request)
     {
         $user = $this->userRepository->getBySub(Auth::id());
         if ($user->is_mentor === false) {

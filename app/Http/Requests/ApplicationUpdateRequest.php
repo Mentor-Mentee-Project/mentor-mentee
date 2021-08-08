@@ -26,7 +26,14 @@ class ApplicationUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'userId' => ['required_if:approved, approved', 'exists:users,id']
+            'userId' => ['required', 'exists:users,id']
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'userId.required' => '承認するユーザーを選択してください'
         ];
     }
 }
