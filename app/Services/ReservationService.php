@@ -32,7 +32,7 @@ class ReservationService
 
     public function getUpcomingReservationsByUser($user)
     {
-        return $this->reservationRepository->getUpcomingByUser($user);
+        return $this->reservationRepository->getUpcomingByUser($user)->sortBy('date');
     }
 
     public function store(StoreReservationRequest $request)
